@@ -1,0 +1,81 @@
+.topnav a{
+    text-align: center;
+    text-decoration: none;
+    color: rgb(255, 168, 141);
+    padding:15px;
+    font-size:20px;
+    overflow:hidden;
+
+}
+
+.topnav {
+    position: fixed;
+    top: 0px;
+    background-color: black;
+    height:35px;
+    width: 100%;
+}
+
+.topnav a:hover {
+    background-color: rgb(155, 118, 57);
+}
+
+.spacer {
+    width: 100%;
+    height:40px;
+}
+
+body {
+    background-color: rgb(200, 200, 154);
+}
+
+.recipe-heading {
+    width:30%;
+    background-color: orange;
+
+}
+
+.recipe {
+    width:30%;
+    background-color: rgb(200, 172, 17);
+    color:yellow;
+}
+
+.time-serves {
+    width:27%;
+    background-color: rgb(214, 106, 24);
+    color:rgb(169, 235, 242);
+}
+
+.ingredients {
+    background-color: rgb(240, 178, 96);
+    color:rgb(5, 16, 2);
+    border: 1px solid white;
+    border-collapse:separate;
+    border-spacing: 6px;
+}
+
+.recipe-title {
+    background-color: rgb(255, 241, 234);
+    width:30%;
+}
+
+.recipe-page-contents {
+    width:30%;
+    background-color: orange;
+
+}
+
+.quote {
+    margin-top:400px;
+    font-weight: bold;
+    font-family: fantasy;
+    font-size: 25px;
+}
+
+
+.hangman-game {
+    position: absolute;
+    top:150px;
+    left:150px;
+}
