@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Cryptography</title>
+    <link rel="stylesheet" type="text/css" href="cryptostylest.css">
+
+</head>
+<body>
+<h1>Basic Substitution Ciphers and Frequency Analysis</h1>
+<h2>Substitution Cipers</h2>
+<p>The substitution cipher was one of the earliest systematic methods of encryption, dating back to Julius Caesar and earlier.
+The substitution cipher is very easy to understand. This makes it a good introduction to cryptography/cryptanalysis.</p>
+
+<p>The idea behind substitution ciphers is that you replace letters in a message with other letters in a (usually)
+systematic way. One common way to do this is to shift each letter a certain amount of places in the alphabet and
+then use that new letter. Then, if you send the message to someone else, all they need to know is how many places
+you shifted and they can encrypt the message.</p>
+
+<p>Below is a form where you can type a message and when you press Encrypt, it will display the newly encrypted message.</p>
+<form id="searchform">
+    <label>Pre-Encryption Message:
+        <input type="text" id="messageInput" autocomplete="off"><br>
+    </label>
+    <button type="submit" id="submitmessage">Encrypt</button>
+</form>
+
+<div id="encryptedMessage"></div>
+<br>
+<h2>Frequency Analysis</h2>
+<p>Substitution ciphers are simple to break using multiple methods. First off, if you know the message was encrypted
+ by shifting each letter a certain amount of places in the alphabet, you can try shifting the all the letters a certain
+amount of places until the message becomes decrypted. If you don't know how the message was encrypted, you can use a
+method called Frequency Analysis. Frequency analysis is the process of analyzing the frequency of occurrence of characters
+in a message and comparing those frequencies to known frequencies of letters in specific languages. For example,
+in English the letter e shows up roughly 12.7% of the time, so if you have a message that has the letter f showing up
+13 or 14% of the time, you can make the educated guess that the letter f in the encrypted message is representing
+ the letter e.</p>
+<p>Below is a place where you can enter a message and it will display the frequency of occurrence of letters in the
+message.</p>
+
+<form id="frequencyform">
+    <label>Ecrypted Message:
+        <input type="text" id="messageInputFreq" autocomplete="off"><br>
+    </label>
+    <button type="submit" id="submitmessageFreq">Analyze</button>
+</form>
+
+<div id="frequencies"></div>
+
+<div id="chartContainer"></div>
+<div id="chart2Container"></div>
+
+
+<script>
+    //shift a letter a certain amount in the alphabet
+    function shifter(letter,shift) {
+        var alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m',
+        'n','o','p','q','r','s','t','u','v','w','x','y','z'];
+        for (var i=0; i < alphabet.length; i++) {
+            if (letter === alphabet[i]) {
+                letter = alphabet[(i + shift) % 26];
+                break
+            }
+        }
+        return letter;
+    }
+
+    function messageShift(message,shift) {
+        var encryptedMessage = '';
+        var lowerCaseMessage = message.toLowerCase();
+        for (var i=0; i < lowerCaseMessage.length; i++) {
+            if (lowerCaseMessage[i] === ' ') {
+                encryptedMessage = encryptedMessage + ' ';
+            } else {
+                encryptedMessage = encryptedMessage + shifter(lowerCaseMessage[i],shift);
+            }
+        }
+        return encryptedMessage
+    }
+    ////////////////////////////////////// the enclosed functions are for ordering lists greatest to least, they don't work forobjects which is what I need
+    function greatest(array) {
+        var maxVal = 0;
+        for(var i=0; i < array.length; i++) {
+            if(array[i] >= maxVal) {
+                maxVal = array[i];
+            }
+        }
+        return maxVal;
+    }
+
+    function indexes(array, value) {
+        var inds = [];
+        for(var i=0; i < array.length; i++) {
+            if(array[i] === value) {
+                inds.push(i);
+            }
+        }
+        return inds;
+    }
+
+    function improvedPop(array,value) {
+        var valInds = indexes(array,value);
+        for(var i=0; i < valInds.length; i++) {
+            array.splice(valInds[i]-i,1)
+        }
+        return array;
+    }
+
+    function greatToLeast(array) {
+        var orderedArray = [];
+        var max;
+        var runTime = array.length;
+        for(var i=0; i < runTime; i++) {
+            max = greatest(array);
+            for(var j=0; j < indexes(array,max).length; j++) {
+                orderedArray.push(max);
+            }
+            improvedPop(array,max)
+        }
+        return orderedArray;
+    }
+    ///////////////////////////////////////
+    function frequency(message) {
+        var seenLetters = {};
+        for(var i=0; i <= message.length - 1; i++) {
+            if (!seenLetters[message[i]]) {
+                seenLetters[message[i]] = 1;
+            } else {
+                seenLetters[message[i]] ++;
+            }
+        }
+        return seenLetters;
+    }
+
+    function freqPercent(message) {
+        var getSeenLetters = frequency(message);
+        var i;
+        var getSeenLetters100 = {};
+        var getSeenLettersFreq = {};
+        for(i in getSeenLetters) {
+            getSeenLetters100[i] = getSeenLetters[i] * 100;
+            getSeenLettersFreq[i] = getSeenLetters100[i] / message.length;
+        }
+        return getSeenLettersFreq;
+    }
+
+    function freqData(message) {
+        var frequencies = freqPercent(message);
+        var data = [];
+        var i;
+        for(i in frequencies) {
+            data.push({y: frequencies[i], label: i})
+        }
+        //data is now a list with all the data, now i am going to order it greatest to least
+        data.sort(function(a,b) {
+            return b.y-a.y;
+        });
+        return data;
+    }
+
+    function spaces(message) {
+        space = 0;
+        for(var i=0; i < message.length; i++) {
+            if(message[i] === ' ') {
+                space ++;
+            }
+        }
+        return space;
+    }
+
+
+    document.getElementById("searchform").addEventListener('submit', function(event) {
+        event.preventDefault();
+        var message = document.getElementById("messageInput").value;
+        var randomShift = Math.floor(Math.random() * 13);
+        console.log(randomShift);
+        document.getElementById("encryptedMessage").innerHTML = "<span id='encrypted'>Encrypted Message:</span> " + messageShift(message,randomShift);
+    });
+    document.getElementById("frequencyform").addEventListener('submit', function(event) {
+        event.preventDefault();
+        var encryptedMessage = document.getElementById("messageInputFreq").value;
+        var data_points = freqData(encryptedMessage);
+        var messageSpaces = spaces(encryptedMessage);
+        messageSpaces = (messageSpaces* 100)/encryptedMessage.length;
+        var englishData = [
+            {y:messageSpaces, label: 'space'},
+            {y:8.167, label: 'a'},
+            {y:1.492, label: 'b'},
+            {y:2.782,label: 'c'},
+            {y:4.253, label: 'd'},
+            {y:12.702, label: 'e'},
+            {y:2.228,label: 'f'},
+            {y:2.015, label: 'g'},
+            {y:6.094, label: 'h'},
+            {y:6.966, label: 'i'},
+            {y:0.153, label: 'j'},
+            {y:0.772, label: 'k'},
+            {y:4.025, label: 'l'},
+            {y:2.406, label: 'm'},
+            {y:6.749, label: 'n'},
+            {y:7.507, label: 'o'},
+            {y:1.929, label: 'p'},
+            {y:0.095, label: 'q'},
+            {y:5.987, label: 'r'},
+            {y:6.327, label: 's'},
+            {y:9.056, label: 't'},
+            {y:2.758, label: 'u'},
+            {y:0.978, label: 'v'},
+            {y:2.360, label: 'w'},
+            {y:0.150, label: 'x'},
+            {y:1.974, label: 'y'},
+            {y:0.074, label: 'z'}
+            ];
+        var orderedEng = englishData.sort(function(a,b) {
+            return b.y-a.y;
+        });
+
+        var chart = new CanvasJS.Chart("chartContainer",
+            {
+                title: {
+                    text: "Frequency of Characters in the Encrypted Message"
+                },
+                data: [
+                    {
+                        type: "column",
+                        dataPoints: data_points
+                    }
+                ],
+                backgroundColor: "#97d684",
+                axisX: {
+                    title: "Letters in Message"
+                },
+                axisY: {
+                    title: "Percent Occurrence"
+                }
+
+            });
+
+        chart.render();
+
+        var chart2 = new CanvasJS.Chart("chart2Container",
+            {
+                title: {
+                    test: "Frequency of Characters in the English Language"
+                },
+                data: [
+                    {
+                        type: "column",
+                        dataPoints: orderedEng
+                    }
+                ],
+                backgroundColor: "#97d684",
+                axisX: {
+                    title: "English Alphabet"
+                },
+                axisY: {
+                    title: "Percent Occurence"
+                }
+
+            });
+        chart2.render();
+
+    });
+    //need to make this go when Analyze is pressed, and update dataPoints to data_point
+
+
+
+
+</script>
+<script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+</body>
+</html>

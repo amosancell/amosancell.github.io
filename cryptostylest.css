@@ -1,0 +1,26 @@
+body {
+    background-color: rgba(255, 168, 141, 0.79);
+}
+
+h1 {
+    color: rgb(148, 122, 200);
+}
+p {
+    color: rgb(3, 64, 0);
+}
+
+form {
+    font-weight:bold;
+}
+
+#encrypted {
+    font-weight: bold;
+}
+
+#chartContainer {
+    height: 400px;
+}
+
+#chartContainer {
+    height: 400px;
+}
